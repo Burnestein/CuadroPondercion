@@ -1,0 +1,10 @@
+C:\Users\burn_\source\repos\CuadroPondercion\bin\Debug\CuadroPondercion.exe.config
+C:\Users\burn_\source\repos\CuadroPondercion\bin\Debug\CuadroPondercion.exe
+C:\Users\burn_\source\repos\CuadroPondercion\bin\Debug\CuadroPondercion.pdb
+C:\Users\burn_\source\repos\CuadroPondercion\obj\Debug\CuadroPondercion.csproj.AssemblyReference.cache
+C:\Users\burn_\source\repos\CuadroPondercion\obj\Debug\CuadroPondercion.Form1.resources
+C:\Users\burn_\source\repos\CuadroPondercion\obj\Debug\CuadroPondercion.Properties.Resources.resources
+C:\Users\burn_\source\repos\CuadroPondercion\obj\Debug\CuadroPondercion.csproj.GenerateResource.cache
+C:\Users\burn_\source\repos\CuadroPondercion\obj\Debug\CuadroPondercion.csproj.CoreCompileInputs.cache
+C:\Users\burn_\source\repos\CuadroPondercion\obj\Debug\CuadroPondercion.exe
+C:\Users\burn_\source\repos\CuadroPondercion\obj\Debug\CuadroPondercion.pdb
