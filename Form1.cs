@@ -3,10 +3,17 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.IO.Image;
+using iText.Layout.Element;
+
 
 namespace CuadroPondercion
 {
@@ -68,10 +75,6 @@ namespace CuadroPondercion
 
             }
 
-            
-            
-
-            
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -551,6 +554,166 @@ namespace CuadroPondercion
         private void button4_Click(object sender, EventArgs e)
         {
 
+        }
+        private Bitmap CaptureControl(Control control)
+        {
+            Bitmap bitmap = new Bitmap(control.Width, control.Height);
+            control.DrawToBitmap(bitmap, new Rectangle(0, 0, control.Width, control.Height));
+            return bitmap;
+        }
+
+        //Método para exportar imagen del diseño creado.
+        private void comoJPGToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Crear el objeto SaveFileDialog
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+
+            // Establecer filtros y opciones del cuadro de diálogo
+            saveFileDialog.Filter = "Archivos PNG(*.pdf)|*.png|Todos los archivos (*.*)|*.*";
+            saveFileDialog.Title = "Guardar como";
+            saveFileDialog.DefaultExt = "png";
+
+            // Mostrar el cuadro de diálogo
+            DialogResult result = saveFileDialog.ShowDialog();
+
+            // Verificar si el usuario hizo clic en "Guardar"
+            if (result == DialogResult.OK)
+            {
+                // Obtener la ruta completa del archivo seleccionado
+                string rutaArchivo = saveFileDialog.FileName;
+
+                // Llamar al método para guardar el panel y la imagen en un archivo PDF
+                GuardarComoJPG(rutaArchivo);
+
+                // Mostrar un mensaje de éxito
+                MessageBox.Show("Imagen guardada exitosamente", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void GuardarComoJPG(string ruta)
+        {
+            // Capturar la imagen de la tabla
+            Bitmap tablaBitmap = CaptureControl(dataGridView1);
+
+            // Capturar la imagen del panel
+            Bitmap panelBitmap = CaptureControl(panel2);
+
+            // Crear una nueva imagen combinando la tabla y el panel
+            int nuevaAnchura = tablaBitmap.Width + panelBitmap.Width;
+            int nuevaAltura = Math.Max(tablaBitmap.Height, panelBitmap.Height);
+
+            Bitmap imagenCombinada = new Bitmap(nuevaAnchura, nuevaAltura);
+
+            using (Graphics g = Graphics.FromImage(imagenCombinada))
+            {
+                g.DrawImage(tablaBitmap, 0, 0);
+                g.DrawImage(panelBitmap, tablaBitmap.Width, 0);
+            }
+
+            // Guardar la imagen combinada
+            imagenCombinada.Save(ruta, System.Drawing.Imaging.ImageFormat.Png);
+
+            // Abrir la imagen guardada
+            if (File.Exists(ruta))
+            {
+                MessageBox.Show("Imagen guardada exitosamente.");
+                System.Diagnostics.Process.Start(ruta);
+            }
+            else
+            {
+                MessageBox.Show("Error al guardar la imagen.");
+            }
+        }
+
+        //Metodo para indicar donde guardar el archivo PDF y generarlo.
+        private void comoPDFToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Crear el objeto SaveFileDialog
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+
+            // Establecer filtros y opciones del cuadro de diálogo
+            saveFileDialog.Filter = "Archivos PDF(*.pdf)|*.png|Todos los archivos (*.*)|*.*";
+            saveFileDialog.Title = "Guardar como";
+            saveFileDialog.DefaultExt = "pdf";
+
+            // Mostrar el cuadro de diálogo
+            DialogResult result = saveFileDialog.ShowDialog();
+
+            // Verificar si el usuario hizo clic en "Guardar"
+            if (result == DialogResult.OK)
+            {
+                // Obtener la ruta completa del archivo seleccionado
+                string rutaArchivo = saveFileDialog.FileName;
+
+                // Llamar al método para guardar el panel y la imagen en un archivo PDF
+                GuardarComoPDF(rutaArchivo);
+
+                // Mostrar un mensaje de éxito
+                MessageBox.Show("Archivo PDF guardado exitosamente", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        //Codigo para exportar el archivo a PDF //No esta finalizado. marca error al guardar 
+        private void GuardarComoPDF(string pdfPath)
+        {
+            // Capturar la imagen de la tabla
+            Bitmap tablaBitmap = CaptureControl(dataGridView1);
+
+            // Capturar la imagen del panel
+            Bitmap panelBitmap = CaptureControl(panel2);
+
+            // Crear una nueva imagen combinando la tabla y el panel
+            int nuevaAnchura = tablaBitmap.Width + panelBitmap.Width;
+            int nuevaAltura = Math.Max(tablaBitmap.Height, panelBitmap.Height);
+
+            Bitmap imagenCombinada = new Bitmap(nuevaAnchura, nuevaAltura);
+
+            using (Graphics g = Graphics.FromImage(imagenCombinada))
+            {
+                g.DrawImage(tablaBitmap, 0, 0);
+                g.DrawImage(panelBitmap, tablaBitmap.Width, 0);
+            }
+            //Hasta aqui creamos y combinamos el bitmap del datagridview y el panel.
+            using (var writer = new PdfWriter(pdfPath))
+            {
+                using (var pdf = new PdfDocument(writer))
+                {
+                    Document document = new Document(pdf, iText.Kernel.Geom.PageSize.A4);
+
+                    // Convertir el Bitmap a byte[]
+                    byte[] bitmapData = ImageToBytes(imagenCombinada);
+
+                    // Crear un objeto Image de iTextSharp
+                    iText.Layout.Element.Image image = new iText.Layout.Element.Image(ImageDataFactory.Create(bitmapData));
+
+                    // Añadir la imagen al documento PDF
+                    document.Add(image);
+
+                    Console.WriteLine("PDF creado exitosamente con la imagen.");
+                }
+            }
+
+
+            // Abrir la imagen guardada
+            if (File.Exists(pdfPath))
+            {
+                MessageBox.Show("Imagen guardada exitosamente.");
+                System.Diagnostics.Process.Start(pdfPath);
+            }
+            else
+            {
+                MessageBox.Show("Error al guardar la imagen.");
+            }
+        }
+
+        // Convertir un objeto Bitmap a byte[]
+        static byte[] ImageToBytes(Bitmap bitmap)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                return stream.ToArray();
+            }
         }
 
         private void panel3_Paint(object sender, PaintEventArgs e)
