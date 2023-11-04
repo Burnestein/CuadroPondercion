@@ -141,7 +141,7 @@ namespace CuadroPondercion
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(248, 47);
             this.button3.TabIndex = 7;
-            this.button3.Text = "Calcular";
+            this.button3.Text = "Calcular Sumatorias y Rangos";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
@@ -259,7 +259,6 @@ namespace CuadroPondercion
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(375, 816);
             this.panel3.TabIndex = 3;
-            this.panel3.Visible = false;
             this.panel3.Paint += new System.Windows.Forms.PaintEventHandler(this.panel3_Paint);
             // 
             // menuStrip1
@@ -271,7 +270,7 @@ namespace CuadroPondercion
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(1582, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(1582, 26);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -283,7 +282,7 @@ namespace CuadroPondercion
             this.exportarToolStripMenuItem,
             this.guardarComoToolStripMenuItem});
             this.archivoToolStripMenuItem.Name = "archivoToolStripMenuItem";
-            this.archivoToolStripMenuItem.Size = new System.Drawing.Size(71, 26);
+            this.archivoToolStripMenuItem.Size = new System.Drawing.Size(71, 22);
             this.archivoToolStripMenuItem.Text = "Archivo";
             // 
             // abrirToolStripMenuItem

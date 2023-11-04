@@ -22,6 +22,8 @@ namespace CuadroPondercion
         private bool estado = false;
         private int social, semiSocial, servicio, privado;
         int tam;
+        int rango;
+
         public Graphics ZonaDibujo;
         List<TextBox> listaTextBoxes;
         List<TextBox> listaTextBoxSuma;
@@ -51,6 +53,12 @@ namespace CuadroPondercion
             InitializeComponent();
             ZonaDibujo = panel2.CreateGraphics();
             tam = 10;
+            social = 0;
+            semiSocial = 0;
+            servicio = 0;
+            privado = 0;
+            rango = 1;
+
             listaTextBoxes = new List<TextBox>();
             listaTextBoxSuma = new List<TextBox>();
             listaTextBoxRango = new List<TextBox>();
@@ -138,11 +146,12 @@ namespace CuadroPondercion
                 {
                     column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 }
-                CrearGrafica();
+                
                 
             }
+            
             dibujarMatriz();
-
+            CrearGrafica();
             dataGridView1.ClearSelection();
             rowIndex = -1;
         }
@@ -157,6 +166,7 @@ namespace CuadroPondercion
             }
             if(listaEspacios.Count > 0)
             {
+                if (rowIndex == -1) rowIndex = 0;
                 string valorDeLaCelda = dataGridView1.Rows[rowIndex].Cells["Espacio"].Value.ToString();
 
                 // Luego, puedes realizar las acciones que necesites con la fila o el valor de la celda
@@ -173,7 +183,9 @@ namespace CuadroPondercion
                 Console.WriteLine("Cantidad de espacios en listaEspacios: "+listaEspacios.Count);
                 dataGridView1.DataSource = dt;
             }
+            
             dibujarMatriz();
+            CrearGrafica();
             dataGridView1.ClearSelection();
             rowIndex = -1;
         }
@@ -397,7 +409,7 @@ namespace CuadroPondercion
             }
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void button3_Click(object sender, EventArgs e) // Hace las sumatorias y saca los Rangos
         {
             //genera las sumas de las columnas y filas
             generarSumas();
@@ -417,6 +429,8 @@ namespace CuadroPondercion
             Console.WriteLine("Convertimos la lista de rangos a listaTextBoxRango");
             ConvertirEnterosATextBox(rangos);
             Console.WriteLine("Los valores de rango han pasado a listaTextBoxRango");
+
+            panel3.Invalidate();
         }
 
         private void generarSumas()
@@ -533,6 +547,7 @@ namespace CuadroPondercion
                 if (!rangoPorNumero.ContainsKey(numero))
                 {
                     rangoPorNumero[numero] = rangoActual;
+                    rango = rangoActual;
                     rangoActual++;
                 }
             }
@@ -756,46 +771,84 @@ namespace CuadroPondercion
         private void panel3_Paint(object sender, PaintEventArgs e)
         {
             
+            
+            int totalAreas = social + semiSocial + servicio + privado;
+
+            int width = 400;
+            int height = 400;
+            int centerX = width / 2;
+            int centerY = height / 2;
+
+            Graphics g = e.Graphics;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
             if (estado)
             {
+                int circleCount = Math.Min(10, rango);
 
-                if ((social + semiSocial + servicio + privado) != 0)
+                int circleRadius = 30;
+
+                for (int i = 0; i < circleCount; i++)
                 {
-                    Graphics grafica = CreateGraphics();
+                    int radius = circleRadius * (i + 1);
 
-                    int totalPonderaciones = social + semiSocial + servicio + privado;
-                    int grados1 = social * 360 / totalPonderaciones;
-                    int grados2 = semiSocial * 360 / totalPonderaciones;
-                    int grados3 = servicio * 360 / totalPonderaciones;
-                    int grados4 = privado * 360 / totalPonderaciones;
-                    //Colores con transparencia
-                    Color newGreen = Color.FromArgb(40, Color.Green);
-                    Color newOrange = Color.FromArgb(40, Color.Orange);
-                    Color newYellow = Color.FromArgb(40, Color.Yellow);
-                    Color newRed = Color.FromArgb(40, Color.Red);
-                    //Dividir la grafica de pastel
-                    grafica.FillPie(new SolidBrush(newGreen), 50, 50, 400, 400, 0, grados1);
-                    grafica.FillPie(new SolidBrush(newOrange), 500, 200, 400, 400, grados1, grados2);
-                    grafica.FillPie(new SolidBrush(newYellow), 100, 100, 400, 400, grados1 + grados2, grados3);
-                    grafica.FillPie(new SolidBrush(newRed), 200, 10, 400, 400, grados1 + grados2 + grados3, grados4);
+                    double total = social + semiSocial + servicio + privado;
+                    double angle = 360.0 / total;
 
-                    //Divisiones de rangos (rango de 5)
-                    // Create Pens
-                    Pen blackPen = new Pen(Color.Black, 2);
-                    // Create a rectangle
-                    Rectangle rect = new Rectangle(195, 195, 40, 40);
-                    // Draw ellipses
-                    e.Graphics.DrawEllipse(blackPen, 165.0F, 165.0F, 100.0F, 100.0F);
-                    e.Graphics.DrawEllipse(blackPen, rect);
-                    e.Graphics.DrawEllipse(blackPen, 120.0F, 120.0F, 190.0F, 190.0F);
-                    e.Graphics.DrawEllipse(blackPen, 70.0F, 70.0F, 290.0F, 290.0F);
-                    e.Graphics.DrawEllipse(blackPen, 30.0F, 30.0F, 360.0F, 360.0F);
-                    //Dispose of objects
-                    blackPen.Dispose();
-                    
+                    DrawColoredCircle(g, centerX, centerY, radius, social, semiSocial, servicio, privado, angle);
+                }
+
+                for (int i = 0; i < circleCount; i++)
+                {
+                    int radius = circleRadius * (i + 1);
+                    g.DrawEllipse(Pens.Black, centerX - radius, centerY - radius, 2 * radius, 2 * radius);
+                }
+
+                for (int i = 0; i < circleCount; i++)
+                {
+                    int radius = circleRadius * (i + 1);
+                    DrawCircleNumber(g, i + 1, centerX, centerY, radius); // Dibujar el número del círculo
+                }
+                
+            }
+
+
+        }
+
+        private void DrawColoredCircle(Graphics g, int centerX, int centerY, int radius, int social, int semiSocial, int servicio, int privado, double angle)
+        {
+            Brush[] brushes = { Brushes.Green, Brushes.Orange, Brushes.Yellow, Brushes.Red };
+            int[] areas = { social, semiSocial, servicio, privado };
+
+            double startAngle = 0;
+
+            for (int i = 0; i < areas.Length; i++)
+            {
+                if (areas[i] > 0)
+                {
+                    double sweepAngle = angle * areas[i];
+                    g.FillPie(brushes[i], centerX - radius, centerY - radius, 2 * radius, 2 * radius, (float)startAngle, (float)sweepAngle);
+                    startAngle += sweepAngle;
                 }
             }
-            
+        }
+
+        private void DrawCircleNumber(Graphics g, int number, int centerX, int centerY, int radius)
+        {
+            // Establecer la fuente para los números
+            Font font = new Font("Arial", 12, FontStyle.Bold);
+            SolidBrush brush = new SolidBrush(Color.Black);
+
+            // Calcular las posiciones para los números
+            int textX = centerX - 5;
+            int textY = centerY + radius + -9;
+
+            // Dibujar el número
+            g.DrawString(number.ToString(), font, brush, textX, textY);
+
+            // Liberar recursos
+            font.Dispose();
+            brush.Dispose();
         }
 
         private void CrearGrafica()
@@ -809,7 +862,8 @@ namespace CuadroPondercion
             privado = ContarFilasConValor(dt, "Privada");
             Console.WriteLine("social = " + privado);
             estado = true;
-            
+            panel3.Invalidate();
+
         }
 
         public int ContarFilasConValor(DataTable dataTable, string valorBuscado)
