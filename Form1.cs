@@ -74,34 +74,56 @@ namespace CuadroPondercion
                 row.Height = 40; // Establece la altura de todas las filas a 50 píxeles
 
             }
-
+            dataGridView1.ClearSelection();
+            rowIndex = -1;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e) //Agregar Area
         {
-            if (rowIndex>0)
+            if (rowIndex>=0)
             {
                 Console.WriteLine("El indice de la fila es: " + rowIndex);
-                // Luego, puedes crear una nueva fila y agregar datos a las columnas de esa fila.
+
+                string miarea = comboBox1.Text;
+                string nombre = textBox1.Text;
+                CEspacio miespacio = new CEspacio(miarea, nombre); // pasa el tipo de area y nombre del espacio al objeto
+                listaEspacios.Insert(rowIndex, miespacio); // agregar el espacio a la tabla, es IMPORTANTE para saber cuantos espacios dibujar
+
+                nombresEspacios.Insert(rowIndex, miespacio.nombre);
+                areasEspacios.Insert(rowIndex, miespacio.area);
+
+                // crear una nueva fila y agregar datos a las columnas de esa fila.
                 DataRow nuevaFila = dt.NewRow();
                 nuevaFila["Area"] = comboBox1.Text;
                 nuevaFila["Espacio"] = textBox1.Text;
                 // ... Continúa agregando datos a otras columnas según sea necesario.
 
                 // Luego, agrega la nueva fila al DataTable en una ubicación específica, por ejemplo, en la posición 2.
+
                 dt.Rows.InsertAt(nuevaFila, rowIndex);  // El segundo argumento especifica la posición deseada.
 
-                // Finalmente, puedes actualizar el DataTable con la nueva fila.
+                // actualiza el DataTable con la nueva fila.
                 dt.AcceptChanges();
+                dataGridView1.DataSource = dt;
             }
-            else
+            else if(rowIndex == -1)
             {
+                Console.WriteLine("El indice de la fila es: " + rowIndex);
+
+                dt.Clear();
+                for (int i = 0; i < nombresEspacios.Count; i++) // llena el dt
+                {
+                    dt.Rows.Add(areasEspacios[i], nombresEspacios[i]);
+                }
+                Console.WriteLine("Cantidad de espacios en listaEspacios: " + listaEspacios.Count);
+                dataGridView1.DataSource = dt;
+
                 dt.Clear();
                 //Refresh();
                 string miarea = comboBox1.Text;
                 string nombre = textBox1.Text;
                 CEspacio miespacio = new CEspacio(miarea, nombre); // pasa el tipo de area y nombre del espacio al objeto
-                listaEspacios.Add(miespacio); // agregar el espacio a la tabla
+                listaEspacios.Add(miespacio); // agregar el espacio a la tabla, es IMPORTANTE para saber cuantos espacios dibujar
 
                 nombresEspacios.Add(miespacio.nombre);
                 areasEspacios.Add(miespacio.area);
@@ -121,14 +143,15 @@ namespace CuadroPondercion
             }
             dibujarMatriz();
 
-
+            dataGridView1.ClearSelection();
+            rowIndex = -1;
         }
         
 
-        private void button2_Click(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e) // Borrar espacio seleccionado
         {
-            //Console.WriteLine("Indice es: " + rowIndex);
-            if (rowIndex >= listaEspacios.Count)
+            Console.WriteLine("Indice es: " + rowIndex);
+            if (rowIndex >= listaEspacios.Count) // comprueba que el indice seleccionado no sea mayor a la cantidad de espacios en la tabla
             {
                 rowIndex = 0;
             }
@@ -147,10 +170,12 @@ namespace CuadroPondercion
                 {
                     dt.Rows.Add(areasEspacios[i], nombresEspacios[i]);
                 }
-
+                Console.WriteLine("Cantidad de espacios en listaEspacios: "+listaEspacios.Count);
                 dataGridView1.DataSource = dt;
             }
             dibujarMatriz();
+            dataGridView1.ClearSelection();
+            rowIndex = -1;
         }
 
         private void GenerarTxtBox()
@@ -211,7 +236,8 @@ namespace CuadroPondercion
 
         private void dibujarMatriz()
         {
-            tam = listaEspacios.Count;
+            tam = listaEspacios.Count; // IMPORTANTE de este tamaño sera la matriz
+            Console.WriteLine("tam = "+tam);
             ZonaDibujo.Clear(Color.White);
             CRombo MiRombo;
 
@@ -491,7 +517,7 @@ namespace CuadroPondercion
             }
         }
 
-        private List<int> generarRangos(List<int> numeros)
+        private List<int> generarRangos(List<int> numeros) // genera una lista de los rangos y los asigna en la tabla
         {
             List<int> rangos = new List<int>();
             Dictionary<int, int> rangoPorNumero = new Dictionary<int, int>();
@@ -713,6 +739,17 @@ namespace CuadroPondercion
             {
                 bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
                 return stream.ToArray();
+            }
+        }
+
+
+        private void dataGridView1_KeyDown(object sender, KeyEventArgs e) // 
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                Console.WriteLine("Quitar seleccion");
+                dataGridView1.ClearSelection(); // Quita la seleccion del datagridview
+                rowIndex = -1;
             }
         }
 
