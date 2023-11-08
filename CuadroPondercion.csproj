@@ -166,5 +166,13 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Imagenes\Btn1Agregar.png" />
+    <Content Include="Imagenes\Btn2Agregar.png" />
+    <Content Include="Imagenes\Btn3Agregar.png" />
+    <Content Include="Imagenes\BtnBorrar1.png" />
+    <Content Include="Imagenes\BtnBorrar2.png" />
+    <Content Include="Imagenes\BtnBorrar3.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

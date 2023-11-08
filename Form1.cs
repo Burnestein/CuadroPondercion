@@ -13,7 +13,7 @@ using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.IO.Image;
 using iText.Layout.Element;
-
+using System.Drawing.Drawing2D;
 
 namespace CuadroPondercion
 {
@@ -23,6 +23,8 @@ namespace CuadroPondercion
         private int social, semiSocial, servicio, privado;
         int tam;
         int rango;
+        private int borderRadius = 20;
+        private Color borderColor = Color.FromArgb(128, 128, 255);
 
         public Graphics ZonaDibujo;
         List<TextBox> listaTextBoxes;
@@ -86,109 +88,8 @@ namespace CuadroPondercion
             rowIndex = -1;
         }
 
-        private void button1_Click(object sender, EventArgs e) //Agregar Area
-        {
-            if (rowIndex>=0)
-            {
-                Console.WriteLine("El indice de la fila es: " + rowIndex);
+ 
 
-                string miarea = comboBox1.Text;
-                string nombre = textBox1.Text;
-                CEspacio miespacio = new CEspacio(miarea, nombre); // pasa el tipo de area y nombre del espacio al objeto
-                listaEspacios.Insert(rowIndex, miespacio); // agregar el espacio a la tabla, es IMPORTANTE para saber cuantos espacios dibujar
-
-                nombresEspacios.Insert(rowIndex, miespacio.nombre);
-                areasEspacios.Insert(rowIndex, miespacio.area);
-
-                // crear una nueva fila y agregar datos a las columnas de esa fila.
-                DataRow nuevaFila = dt.NewRow();
-                nuevaFila["Area"] = comboBox1.Text;
-                nuevaFila["Espacio"] = textBox1.Text;
-                // ... Continúa agregando datos a otras columnas según sea necesario.
-
-                // Luego, agrega la nueva fila al DataTable en una ubicación específica, por ejemplo, en la posición 2.
-
-                dt.Rows.InsertAt(nuevaFila, rowIndex);  // El segundo argumento especifica la posición deseada.
-
-                // actualiza el DataTable con la nueva fila.
-                dt.AcceptChanges();
-                dataGridView1.DataSource = dt;
-            }
-            else if(rowIndex == -1)
-            {
-                Console.WriteLine("El indice de la fila es: " + rowIndex);
-
-                dt.Clear();
-                for (int i = 0; i < nombresEspacios.Count; i++) // llena el dt
-                {
-                    dt.Rows.Add(areasEspacios[i], nombresEspacios[i]);
-                }
-                Console.WriteLine("Cantidad de espacios en listaEspacios: " + listaEspacios.Count);
-                dataGridView1.DataSource = dt;
-
-                dt.Clear();
-                //Refresh();
-                string miarea = comboBox1.Text;
-                string nombre = textBox1.Text;
-                CEspacio miespacio = new CEspacio(miarea, nombre); // pasa el tipo de area y nombre del espacio al objeto
-                listaEspacios.Add(miespacio); // agregar el espacio a la tabla, es IMPORTANTE para saber cuantos espacios dibujar
-
-                nombresEspacios.Add(miespacio.nombre);
-                areasEspacios.Add(miespacio.area);
-
-                for (int i = 0; i < nombresEspacios.Count; i++) // llena el dt
-                {
-                    dt.Rows.Add(areasEspacios[i], nombresEspacios[i]);
-                }
-
-                dataGridView1.DataSource = dt; // agregar los datos de la data table a la tabla
-                foreach (DataGridViewColumn column in dataGridView1.Columns)
-                {
-                    column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                }
-                
-                
-            }
-            
-            dibujarMatriz();
-            CrearGrafica();
-            dataGridView1.ClearSelection();
-            rowIndex = -1;
-        }
-        
-
-        private void button2_Click(object sender, EventArgs e) // Borrar espacio seleccionado
-        {
-            Console.WriteLine("Indice es: " + rowIndex);
-            if (rowIndex >= listaEspacios.Count) // comprueba que el indice seleccionado no sea mayor a la cantidad de espacios en la tabla
-            {
-                rowIndex = 0;
-            }
-            if(listaEspacios.Count > 0)
-            {
-                if (rowIndex == -1) rowIndex = 0;
-                string valorDeLaCelda = dataGridView1.Rows[rowIndex].Cells["Espacio"].Value.ToString();
-
-                // Luego, puedes realizar las acciones que necesites con la fila o el valor de la celda
-                // Por ejemplo, para borrar la fila seleccionada:
-                dataGridView1.Rows.RemoveAt(rowIndex);
-                nombresEspacios.RemoveAt(rowIndex);
-                listaEspacios.RemoveAt(rowIndex);
-                areasEspacios.RemoveAt(rowIndex);
-                dt.Clear();
-                for (int i = 0; i < nombresEspacios.Count; i++) // llena el dt
-                {
-                    dt.Rows.Add(areasEspacios[i], nombresEspacios[i]);
-                }
-                Console.WriteLine("Cantidad de espacios en listaEspacios: "+listaEspacios.Count);
-                dataGridView1.DataSource = dt;
-            }
-            
-            dibujarMatriz();
-            CrearGrafica();
-            dataGridView1.ClearSelection();
-            rowIndex = -1;
-        }
 
         private void GenerarTxtBox()
         {
@@ -245,6 +146,63 @@ namespace CuadroPondercion
             }
             listaTextBoxRango.Clear();
         }
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+            tam = listaEspacios.Count; // IMPORTANTE de este tamaño sera la matriz
+            Console.WriteLine("tam = " + tam);
+            ZonaDibujo.Clear(Color.White);
+            CRombo MiRombo;
+
+
+            int S = Si;
+            int T = Ti;
+            int U = Ui;
+            int V = Vi;
+            int W = Wi;
+            int X = Xi;
+            int Y = Yi;
+            int Z = Zi;
+
+            for (int i = 0; i < tam; i++)
+            {
+                //Crea las columnas de rombos
+                MiRombo = new CRombo(S, T, U, V, W, X, Y, Z, Color.Black);
+                MiRombo.Dibuja(ZonaDibujo);
+
+                int s = S;
+                int t = T;
+                int u = U;
+                int v = V;
+                int w = W;
+                int x = X;
+                int y = Y;
+                int z = Z;
+
+                for (int n = tam + 2; n > i; n--)
+                {/*Tener siempre 2+ que el For anterior*/
+                    //Crea las filas de rombos
+                    MiRombo = new CRombo(s, t, u, v, w, x, y, z, Color.Black);
+                    MiRombo.Dibuja(ZonaDibujo);
+
+                    s += 30;
+                    t += 20;
+                    u += 30;
+                    v += 20;
+                    w += 30;
+                    x += 20;
+                    y += 30;
+                    z += 20;
+                }
+
+                T += 40;
+                V += 40;
+                X += 40;
+                Z += 40;
+            }
+
+
+        }
+
 
         private void dibujarMatriz()
         {
@@ -817,7 +775,7 @@ namespace CuadroPondercion
 
         private void DrawColoredCircle(Graphics g, int centerX, int centerY, int radius, int social, int semiSocial, int servicio, int privado, double angle)
         {
-            Brush[] brushes = { Brushes.Green, Brushes.Orange, Brushes.Yellow, Brushes.Red };
+            Brush[] brushes = { Brushes.Green, Brushes.Orange, Brushes.LightYellow, Brushes.Red };
             int[] areas = { social, semiSocial, servicio, privado };
 
             double startAngle = 0;
@@ -832,6 +790,194 @@ namespace CuadroPondercion
                 }
             }
         }
+
+        //------------------------------------------------ APARIENCIA CONTROL AREA STAR -----------------------------------------------------------//
+        private GraphicsPath GetRoundedPath(Rectangle rect, float radius)
+        {
+            GraphicsPath path = new GraphicsPath();
+            float curveSize = radius * 2F;
+            path.StartFigure();
+            path.AddArc(rect.X, rect.Y, curveSize, curveSize, 180, 90);
+            path.AddArc(rect.Right - curveSize, rect.Y, curveSize, curveSize, 270, 90);
+            path.AddArc(rect.Right - curveSize, rect.Bottom - curveSize, curveSize, curveSize, 0, 90);
+            path.AddArc(rect.X, rect.Bottom - curveSize, curveSize, curveSize, 90, 90);
+            path.CloseFigure();
+            return path;
+        }
+        private void ControlRegionAndBorder(Control control, float radius, Graphics graph, Color borderColor)
+        {
+            using (GraphicsPath roundPath = GetRoundedPath(control.ClientRectangle, radius))
+            using (Pen penBorder = new Pen(borderColor, 1))
+            {
+                graph.SmoothingMode = SmoothingMode.AntiAlias;
+                control.Region = new Region(roundPath);
+                graph.DrawPath(penBorder, roundPath);
+            }
+        }
+        private void PnlControl_Paint(object sender, PaintEventArgs e)
+        {
+            ControlRegionAndBorder(PnlControl, borderRadius, e.Graphics, borderColor);
+
+        }
+
+        ///////////////////////////////////////////////////BOTON Agregar STAR/////////////////////////////////////////////
+        private void Pnlbtnclick1_MouseEnter(object sender, EventArgs e)
+        {
+            Pnlbtnclick1.Visible = false;
+            PnlBtnClick2.Visible = true;
+            PnlBtnClick3.Visible = false;
+
+
+        }
+        private void PnlBtnClick2_MouseLeave(object sender, EventArgs e)
+        {
+            Pnlbtnclick1.Visible = true;
+            PnlBtnClick2.Visible = false;
+            PnlBtnClick3.Visible = false;
+        }
+        private void PnlBtnClick2_MouseDown(object sender, MouseEventArgs e)
+        {
+            Pnlbtnclick1.Visible = false;
+            PnlBtnClick2.Visible = false;
+            PnlBtnClick3.Visible = true;
+
+            ///////////////////////////////////////////////////EVENTO CLICK STAR/////////////////////////////////////////////
+            ///
+            if (rowIndex >= 0)
+            {
+                Console.WriteLine("El indice de la fila es: " + rowIndex);
+
+                string miarea = comboBox1.Text;
+                string nombre = textBox1.Text;
+                CEspacio miespacio = new CEspacio(miarea, nombre); // pasa el tipo de area y nombre del espacio al objeto
+                listaEspacios.Insert(rowIndex, miespacio); // agregar el espacio a la tabla, es IMPORTANTE para saber cuantos espacios dibujar
+
+                nombresEspacios.Insert(rowIndex, miespacio.nombre);
+                areasEspacios.Insert(rowIndex, miespacio.area);
+
+                // crear una nueva fila y agregar datos a las columnas de esa fila.
+                DataRow nuevaFila = dt.NewRow();
+                nuevaFila["Area"] = comboBox1.Text;
+                nuevaFila["Espacio"] = textBox1.Text;
+                // ... Continúa agregando datos a otras columnas según sea necesario.
+
+                // Luego, agrega la nueva fila al DataTable en una ubicación específica, por ejemplo, en la posición 2.
+
+                dt.Rows.InsertAt(nuevaFila, rowIndex);  // El segundo argumento especifica la posición deseada.
+
+                // actualiza el DataTable con la nueva fila.
+                dt.AcceptChanges();
+                dataGridView1.DataSource = dt;
+            }
+            else if (rowIndex == -1)
+            {
+                Console.WriteLine("El indice de la fila es: " + rowIndex);
+
+                dt.Clear();
+                for (int i = 0; i < nombresEspacios.Count; i++) // llena el dt
+                {
+                    dt.Rows.Add(areasEspacios[i], nombresEspacios[i]);
+                }
+                Console.WriteLine("Cantidad de espacios en listaEspacios: " + listaEspacios.Count);
+                dataGridView1.DataSource = dt;
+
+                dt.Clear();
+                //Refresh();
+                string miarea = comboBox1.Text;
+                string nombre = textBox1.Text;
+                CEspacio miespacio = new CEspacio(miarea, nombre); // pasa el tipo de area y nombre del espacio al objeto
+                listaEspacios.Add(miespacio); // agregar el espacio a la tabla, es IMPORTANTE para saber cuantos espacios dibujar
+
+                nombresEspacios.Add(miespacio.nombre);
+                areasEspacios.Add(miespacio.area);
+
+                for (int i = 0; i < nombresEspacios.Count; i++) // llena el dt
+                {
+                    dt.Rows.Add(areasEspacios[i], nombresEspacios[i]);
+                }
+
+                dataGridView1.DataSource = dt; // agregar los datos de la data table a la tabla
+                foreach (DataGridViewColumn column in dataGridView1.Columns)
+                {
+                    column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                }
+
+
+            }
+
+            dibujarMatriz();
+            CrearGrafica();
+            dataGridView1.ClearSelection();
+            rowIndex = -1;
+
+            ///////////////////////////////////////////////////EVENTO CLICK END/////////////////////////////////////////////
+        }
+        ///////////////////////////////////////////////////BOTON BORRAR END/////////////////////////////////////////////
+
+        private void textBox1_Enter(object sender, EventArgs e)
+        {
+            if (textBox1.Text == "Ingresa un nombre")
+            {
+                textBox1.Text = string.Empty;
+                textBox1.ForeColor = Color.Black;
+            }
+        }
+
+        ///////////////////////////////////////////////////BOTON BORRAR STAR/////////////////////////////////////////////
+        private void PnlBtnBorrarClick1_MouseEnter(object sender, EventArgs e)
+        {
+            PnlBtnBorrarClick1.Visible = false;
+            PnlBtnBorrarClick2.Visible = true;
+            PnlBtnBorrarClick3.Visible = false;
+
+        }
+        private void PnlBtnBorrarClick2_MouseLeave(object sender, EventArgs e)
+        {
+            PnlBtnBorrarClick1.Visible = true;
+            PnlBtnBorrarClick2.Visible = false;
+            PnlBtnBorrarClick3.Visible = false;
+        }
+        private void PnlBtnBorrarClick2_MouseDown(object sender, MouseEventArgs e)
+        {
+            PnlBtnBorrarClick1.Visible = false;
+            PnlBtnBorrarClick2.Visible = false;
+            PnlBtnBorrarClick3.Visible = true;
+
+            Console.WriteLine("Indice es: " + rowIndex);
+            if (rowIndex >= listaEspacios.Count) // comprueba que el indice seleccionado no sea mayor a la cantidad de espacios en la tabla
+            {
+                rowIndex = 0;
+            }
+            if (listaEspacios.Count > 0)
+            {
+                if (rowIndex == -1) rowIndex = 0;
+                string valorDeLaCelda = dataGridView1.Rows[rowIndex].Cells["Espacio"].Value.ToString();
+
+                // Luego, puedes realizar las acciones que necesites con la fila o el valor de la celda
+                // Por ejemplo, para borrar la fila seleccionada:
+                dataGridView1.Rows.RemoveAt(rowIndex);
+                nombresEspacios.RemoveAt(rowIndex);
+                listaEspacios.RemoveAt(rowIndex);
+                areasEspacios.RemoveAt(rowIndex);
+                dt.Clear();
+                for (int i = 0; i < nombresEspacios.Count; i++) // llena el dt
+                {
+                    dt.Rows.Add(areasEspacios[i], nombresEspacios[i]);
+                }
+                Console.WriteLine("Cantidad de espacios en listaEspacios: " + listaEspacios.Count);
+                dataGridView1.DataSource = dt;
+            }
+
+            dibujarMatriz();
+            CrearGrafica();
+            dataGridView1.ClearSelection();
+            rowIndex = -1;
+        }
+
+        
+        ///////////////////////////////////////////////////BOTON BORRAR STAR/////////////////////////////////////////////
+
+        //------------------------------------------------ APARIENCIA CONTROL AREA END -----------------------------------------------------------//
 
         private void DrawCircleNumber(Graphics g, int number, int centerX, int centerY, int radius)
         {
