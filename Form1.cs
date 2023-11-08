@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.IO.Image;
-using iText.Layout.Element;
 using System.Drawing.Drawing2D;
 
 namespace CuadroPondercion
