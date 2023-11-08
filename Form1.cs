@@ -723,8 +723,8 @@ namespace CuadroPondercion
 
         private void panel3_Paint(object sender, PaintEventArgs e)
         {
-            
-            
+
+
             int totalAreas = social + semiSocial + servicio + privado;
 
             int width = 400;
@@ -760,9 +760,44 @@ namespace CuadroPondercion
                 for (int i = 0; i < circleCount; i++)
                 {
                     int radius = circleRadius * (i + 1);
-                    DrawCircleNumber(g, i + 1, centerX, centerY, radius); // Dibujar el número del círculo
+                    //DrawCircleNumber(g, i + 1, centerX, centerY, radius); // Dibujar el número del círculo
                 }
-                
+
+                //
+                Font font = new Font("Arial", 12, FontStyle.Bold);
+                SolidBrush brush = new SolidBrush(Color.Black);
+                if (rangos.Count > 0)
+                {
+                    for (int rangoActual = 1; rangoActual <= circleCount; rangoActual++)
+                    {
+                        List<string> nombresEnRango = nombresEspacios.Where((n, i) => rangos[i] == rangoActual).ToList(); // Obtener los nombres de espacios para el rango actual
+
+                        if (nombresEnRango.Any())
+                        {
+                            int radius = circleRadius * rangoActual;
+                            double angle = 360.0 / nombresEnRango.Count;
+
+                            for (int j = 0; j < nombresEnRango.Count; j++)
+                            {
+                                double x = centerX + radius * Math.Cos(j * angle * Math.PI / 180); // Coordenada X del círculo del nombre del espacio
+                                double y = centerY + radius * Math.Sin(j * angle * Math.PI / 180); // Coordenada Y del círculo del nombre del espacio
+
+                                // Dibujar el círculo del nombre del espacio
+                                //g.DrawEllipse(Pens.Black, (float)x - 5, (float)y - 5, 10, 10);
+
+                                // Establecer el formato para el texto (alineación, etc.)
+                                StringFormat format = new StringFormat();
+                                format.LineAlignment = StringAlignment.Center;
+                                format.Alignment = StringAlignment.Center;
+
+                                // Dibujar el nombre del espacio con el formato determinado
+                                g.DrawString(nombresEnRango[j], font, brush, new RectangleF((float)x - 30, (float)y - 30, 60, 60), format);
+                            }
+                        }
+                    }
+                }
+
+
             }
 
 
@@ -770,7 +805,7 @@ namespace CuadroPondercion
 
         private void DrawColoredCircle(Graphics g, int centerX, int centerY, int radius, int social, int semiSocial, int servicio, int privado, double angle)
         {
-            Brush[] brushes = { Brushes.Green, Brushes.Orange, Brushes.LightYellow, Brushes.Red };
+            Brush[] brushes = { Brushes.Green, Brushes.Orange, Brushes.Yellow, Brushes.Red };
             int[] areas = { social, semiSocial, servicio, privado };
 
             double startAngle = 0;
@@ -784,6 +819,24 @@ namespace CuadroPondercion
                     startAngle += sweepAngle;
                 }
             }
+        }
+
+        private void DrawCircleNumber(Graphics g, int number, int centerX, int centerY, int radius)
+        {
+            // Establecer la fuente para los números
+            Font font = new Font("Arial", 12, FontStyle.Bold);
+            SolidBrush brush = new SolidBrush(Color.Black);
+
+            // Calcular las posiciones para los números
+            int textX = centerX - 5;
+            int textY = centerY + radius + -9;
+
+            // Dibujar el número
+            g.DrawString(number.ToString(), font, brush, textX, textY);
+
+            // Liberar recursos
+            font.Dispose();
+            brush.Dispose();
         }
 
         //------------------------------------------------ APARIENCIA CONTROL AREA STAR -----------------------------------------------------------//
@@ -974,23 +1027,7 @@ namespace CuadroPondercion
 
         //------------------------------------------------ APARIENCIA CONTROL AREA END -----------------------------------------------------------//
 
-        private void DrawCircleNumber(Graphics g, int number, int centerX, int centerY, int radius)
-        {
-            // Establecer la fuente para los números
-            Font font = new Font("Arial", 12, FontStyle.Bold);
-            SolidBrush brush = new SolidBrush(Color.Black);
-
-            // Calcular las posiciones para los números
-            int textX = centerX - 5;
-            int textY = centerY + radius + -9;
-
-            // Dibujar el número
-            g.DrawString(number.ToString(), font, brush, textX, textY);
-
-            // Liberar recursos
-            font.Dispose();
-            brush.Dispose();
-        }
+        
 
         private void CrearGrafica()
         {
