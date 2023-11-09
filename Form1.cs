@@ -143,57 +143,6 @@ namespace CuadroPondercion
         }
         private void panel2_Paint(object sender, PaintEventArgs e)
         {
-            tam = listaEspacios.Count; // IMPORTANTE de este tamaño sera la matriz
-            Console.WriteLine("tam = " + tam);
-            ZonaDibujo.Clear(Color.White);
-            CRombo MiRombo;
-
-
-            int S = Si;
-            int T = Ti;
-            int U = Ui;
-            int V = Vi;
-            int W = Wi;
-            int X = Xi;
-            int Y = Yi;
-            int Z = Zi;
-
-            for (int i = 0; i < tam; i++)
-            {
-                //Crea las columnas de rombos
-                MiRombo = new CRombo(S, T, U, V, W, X, Y, Z, Color.Black);
-                MiRombo.Dibuja(ZonaDibujo);
-
-                int s = S;
-                int t = T;
-                int u = U;
-                int v = V;
-                int w = W;
-                int x = X;
-                int y = Y;
-                int z = Z;
-
-                for (int n = tam + 2; n > i; n--)
-                {/*Tener siempre 2+ que el For anterior*/
-                    //Crea las filas de rombos
-                    MiRombo = new CRombo(s, t, u, v, w, x, y, z, Color.Black);
-                    MiRombo.Dibuja(ZonaDibujo);
-
-                    s += 30;
-                    t += 20;
-                    u += 30;
-                    v += 20;
-                    w += 30;
-                    x += 20;
-                    y += 30;
-                    z += 20;
-                }
-
-                T += 40;
-                V += 40;
-                X += 40;
-                Z += 40;
-            }
 
 
         }
@@ -1260,6 +1209,61 @@ namespace CuadroPondercion
 
                     MessageBox.Show("Exportación exitosa.");
                 }
+            }
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            tam = listaEspacios.Count; // IMPORTANTE de este tamaño sera la matriz
+            Console.WriteLine("tam = " + tam);
+            ZonaDibujo.Clear(Color.White);
+            CRombo MiRombo;
+
+
+            int S = Si;
+            int T = Ti;
+            int U = Ui;
+            int V = Vi;
+            int W = Wi;
+            int X = Xi;
+            int Y = Yi;
+            int Z = Zi;
+
+            for (int i = 0; i < tam; i++)
+            {
+                //Crea las columnas de rombos
+                MiRombo = new CRombo(S, T, U, V, W, X, Y, Z, Color.Black);
+                MiRombo.Dibuja(ZonaDibujo);
+
+                int s = S;
+                int t = T;
+                int u = U;
+                int v = V;
+                int w = W;
+                int x = X;
+                int y = Y;
+                int z = Z;
+
+                for (int n = tam + 2; n > i; n--)
+                {/*Tener siempre 2+ que el For anterior*/
+                    //Crea las filas de rombos
+                    MiRombo = new CRombo(s, t, u, v, w, x, y, z, Color.Black);
+                    MiRombo.Dibuja(ZonaDibujo);
+
+                    s += 30;
+                    t += 20;
+                    u += 30;
+                    v += 20;
+                    w += 30;
+                    x += 20;
+                    y += 30;
+                    z += 20;
+                }
+
+                T += 40;
+                V += 40;
+                X += 40;
+                Z += 40;
             }
         }
 
