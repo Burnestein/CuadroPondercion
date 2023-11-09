@@ -5,10 +5,10 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using iText.Kernel.Pdf;
-using iText.Layout;
-using iText.IO.Image;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 
 namespace CuadroPondercion
 {
@@ -533,7 +533,7 @@ namespace CuadroPondercion
         private Bitmap CaptureControl(Control control)
         {
             Bitmap bitmap = new Bitmap(control.Width, control.Height);
-            control.DrawToBitmap(bitmap, new Rectangle(0, 0, control.Width, control.Height));
+            control.DrawToBitmap(bitmap, new System.Drawing.Rectangle(0, 0, control.Width, control.Height));
             return bitmap;
         }
 
@@ -600,97 +600,7 @@ namespace CuadroPondercion
             }
         }
 
-        //Metodo para indicar donde guardar el archivo PDF y generarlo.
-        private void comoPDFToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            // Crear el objeto SaveFileDialog
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-
-            // Establecer filtros y opciones del cuadro de diálogo
-            saveFileDialog.Filter = "Archivos PDF(*.pdf)|*.png|Todos los archivos (*.*)|*.*";
-            saveFileDialog.Title = "Guardar como";
-            saveFileDialog.DefaultExt = "pdf";
-
-            // Mostrar el cuadro de diálogo
-            DialogResult result = saveFileDialog.ShowDialog();
-
-            // Verificar si el usuario hizo clic en "Guardar"
-            if (result == DialogResult.OK)
-            {
-                // Obtener la ruta completa del archivo seleccionado
-                string rutaArchivo = saveFileDialog.FileName;
-
-                // Llamar al método para guardar el panel y la imagen en un archivo PDF
-                GuardarComoPDF(rutaArchivo);
-
-                // Mostrar un mensaje de éxito
-                MessageBox.Show("Archivo PDF guardado exitosamente", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
-        //Codigo para exportar el archivo a PDF //No esta finalizado. marca error al guardar 
-        private void GuardarComoPDF(string pdfPath)
-        {
-            // Capturar la imagen de la tabla
-            Bitmap tablaBitmap = CaptureControl(dataGridView1);
-
-            // Capturar la imagen del panel
-            Bitmap panelBitmap = CaptureControl(panel2);
-
-            // Crear una nueva imagen combinando la tabla y el panel
-            int nuevaAnchura = tablaBitmap.Width + panelBitmap.Width;
-            int nuevaAltura = Math.Max(tablaBitmap.Height, panelBitmap.Height);
-
-            Bitmap imagenCombinada = new Bitmap(nuevaAnchura, nuevaAltura);
-
-            using (Graphics g = Graphics.FromImage(imagenCombinada))
-            {
-                g.DrawImage(tablaBitmap, 0, 0);
-                g.DrawImage(panelBitmap, tablaBitmap.Width, 0);
-            }
-            //Hasta aqui creamos y combinamos el bitmap del datagridview y el panel.
-            using (var writer = new PdfWriter(pdfPath))
-            {
-                using (var pdf = new PdfDocument(writer))
-                {
-                    Document document = new Document(pdf, iText.Kernel.Geom.PageSize.A4);
-
-                    // Convertir el Bitmap a byte[]
-                    byte[] bitmapData = ImageToBytes(imagenCombinada);
-
-                    // Crear un objeto Image de iTextSharp
-                    iText.Layout.Element.Image image = new iText.Layout.Element.Image(ImageDataFactory.Create(bitmapData));
-
-                    // Añadir la imagen al documento PDF
-                    document.Add(image);
-
-                    Console.WriteLine("PDF creado exitosamente con la imagen.");
-                }
-            }
-
-
-            // Abrir la imagen guardada
-            if (File.Exists(pdfPath))
-            {
-                MessageBox.Show("Imagen guardada exitosamente.");
-                System.Diagnostics.Process.Start(pdfPath);
-            }
-            else
-            {
-                MessageBox.Show("Error al guardar la imagen.");
-            }
-        }
-
-        // Convertir un objeto Bitmap a byte[]
-        static byte[] ImageToBytes(Bitmap bitmap)
-        {
-            using (MemoryStream stream = new MemoryStream())
-            {
-                bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                return stream.ToArray();
-            }
-        }
-
+        
 
         private void dataGridView1_KeyDown(object sender, KeyEventArgs e) // 
         {
@@ -745,7 +655,7 @@ namespace CuadroPondercion
                 }
 
                 //
-                Font font = new Font("Arial", 8, FontStyle.Bold);
+                System.Drawing.Font font = new System.Drawing.Font("Arial", 8, FontStyle.Bold);
                 SolidBrush brush = new SolidBrush(Color.White);
                 
                 if (rangos.Count > 0)
@@ -950,7 +860,7 @@ namespace CuadroPondercion
         private void DrawCircleNumber(Graphics g, int number, int centerX, int centerY, int radius)
         {
             // Establecer la fuente para los números
-            Font font = new Font("Arial", 12, FontStyle.Bold);
+            System.Drawing.Font font = new System.Drawing.Font("Arial", 12, FontStyle.Bold);
             SolidBrush brush = new SolidBrush(Color.Black);
 
             // Calcular las posiciones para los números
@@ -966,7 +876,7 @@ namespace CuadroPondercion
         }
 
         //------------------------------------------------ APARIENCIA CONTROL AREA STAR -----------------------------------------------------------//
-        private GraphicsPath GetRoundedPath(Rectangle rect, float radius)
+        private GraphicsPath GetRoundedPath(System.Drawing.Rectangle rect, float radius)
         {
             GraphicsPath path = new GraphicsPath();
             float curveSize = radius * 2F;
@@ -1170,6 +1080,187 @@ namespace CuadroPondercion
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
+        }
+        //Guardar como imagen la matriz de ponderaciones (Datagridview + panel)
+        private void PonderacioncomoPNGToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Mostrar OpenFileDialog para seleccionar la ruta de destino
+            using (SaveFileDialog saveDialog = new SaveFileDialog())
+            {
+                saveDialog.Filter = "Archivos de imagen (*.png)|*.png";
+                saveDialog.Title = "Guardar Imagen";
+
+                if (saveDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string filePath = saveDialog.FileName;
+
+                    // Crear imágenes de DataGridView y Panel
+                    Bitmap dgvImage = CaptureControlAsImage(dataGridView1);
+                    Bitmap panelImage = CaptureControlAsImage(panel2);
+
+                    // Combinar imágenes
+                    Bitmap combinedImage = CombineImages(dgvImage, panelImage);
+
+                    // Guardar la imagen combinada en la ruta seleccionada
+                    SaveImage(combinedImage, filePath);
+
+                    MessageBox.Show("Exportación exitosa.");
+                }
+            }
+        }
+        //Dibujar el contenido de cada control en un bitmap temporal.
+        private Bitmap CaptureControlAsImage(Control control)
+        {
+            Bitmap bitmap = new Bitmap(control.Width, control.Height);
+            control.DrawToBitmap(bitmap, new System.Drawing.Rectangle(0, 0, control.Width, control.Height));
+            return bitmap;
+        }
+        //Combinar los bitmap de cada control
+        private Bitmap CombineImages(Bitmap image1, Bitmap image2)
+        {
+            int combinedWidth = image1.Width + image2.Width;
+            int combinedHeight = Math.Max(image1.Height, image2.Height);
+
+            Bitmap combinedImage = new Bitmap(combinedWidth, combinedHeight);
+
+            using (Graphics g = Graphics.FromImage(combinedImage))
+            {
+                g.DrawImage(image1, 0, 0);
+                g.DrawImage(image2, image1.Width, 0);
+            }
+
+            return combinedImage;
+        }
+        //Guardar imagen
+        private void SaveImage(Bitmap image, string fileName)
+        {
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                image.Save(memoryStream, ImageFormat.Png);
+                File.WriteAllBytes(fileName, memoryStream.ToArray());
+            }
+        }
+        private void PonderacioncomoPDFToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            // Mostrar OpenFileDialog para seleccionar la ruta de destino
+            using (SaveFileDialog saveDialog = new SaveFileDialog())
+            {
+                saveDialog.Filter = "Archivos PDF (*.pdf)|*.pdf";
+                saveDialog.Title = "Guardar PDF";
+
+                if (saveDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string filePath = saveDialog.FileName;
+
+                    // Crear imágenes de DataGridView y Panel
+                    Bitmap dgvImage = CaptureControlAsImage(dataGridView1);
+                    Bitmap panelImage = CaptureControlAsImage(panel2);
+
+                    // Combinar imágenes
+                    Bitmap combinedImage = CombineImages(dgvImage, panelImage);
+
+                    //Crear documento
+                    Document doc = new Document(iTextSharp.text.PageSize.LETTER.Rotate(), 10, 10, 10, 10);
+
+                    //Convierte el bitmap del control a System.Drawing.Image
+                    System.Drawing.Image image = combinedImage;
+                    PdfWriter.GetInstance(doc, new FileStream(filePath, FileMode.Create));
+                    doc.Open();
+                    //Creamos un image de itextSharp y convertimos nuestra System.Drawing.Image a iTextSharp.text.Image y la agregamos.
+                    iTextSharp.text.Image image1 = iTextSharp.text.Image.GetInstance(image,
+            System.Drawing.Imaging.ImageFormat.Jpeg);
+                    /*
+                    //Centrar imagen
+                    image1.Alignment = iTextSharp.text.Image.ALIGN_CENTER;
+                    //Escalarla
+                    
+                    if (image1.Height > image1.Width)
+                    {
+                        //Maximum height is 800 pixels.
+                        float percentage = 0.0f;
+                        percentage = 700 / image1.Height;
+                        image1.ScalePercent(percentage * 100);
+                    }
+                    else
+                    {
+                        //Maximum width is 600 pixels.
+                        float percentage = 0.0f;
+                        percentage = 540 / image1.Width;
+                        image1.ScalePercent(percentage * 100);
+                    }*/
+
+                    //Agrega la imagen al documento
+                    doc.Add(image1);
+                    doc.Close();
+
+                    MessageBox.Show("Exportación exitosa.");
+                }
+            }
+        }
+        //Guardar como imagen la circular
+        private void CircularcomoPNGToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            // Mostrar OpenFileDialog para seleccionar la ruta de destino
+            using (SaveFileDialog saveDialog = new SaveFileDialog())
+            {
+                saveDialog.Filter = "Archivos de imagen (*.png)|*.png";
+                saveDialog.Title = "Guardar Imagen";
+
+                if (saveDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string filePath = saveDialog.FileName;
+
+                    // Crear imágenes de DataGridView y Panel
+                    Bitmap circularImage = CaptureControlAsImage(panel3);
+
+                    // Guardar la imagen combinada en la ruta seleccionada
+                    SaveImage(circularImage, filePath);
+
+                    MessageBox.Show("Exportación exitosa.");
+                }
+            }
+        }
+        //Guardar como PDF la circular.
+        private void CircularcomoPDFToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            // Mostrar OpenFileDialog para seleccionar la ruta de destino
+            using (SaveFileDialog saveDialog = new SaveFileDialog())
+            {
+                saveDialog.Filter = "Archivos PDF (*.pdf)|*.pdf";
+                saveDialog.Title = "Guardar PDF";
+
+                if (saveDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string filePath = saveDialog.FileName;
+
+                    // Crear imágenes de DataGridView y Panel
+                    Bitmap circularImage = CaptureControlAsImage(panel3);
+
+
+                    //Crear documento
+                    Document doc = new Document();
+
+                    //Convierte el bitmap del control a System.Drawing.Image
+                    System.Drawing.Image image = circularImage;
+                    PdfWriter.GetInstance(doc, new FileStream(filePath, FileMode.Create));
+                    doc.Open();
+
+                    //Creamos un image de itextSharp y convertimos nuestra System.Drawing.Image a iTextSharp.text.Image y la agregamos.
+                    iTextSharp.text.Image image1 = iTextSharp.text.Image.GetInstance(image,
+            System.Drawing.Imaging.ImageFormat.Jpeg);
+
+                    //Escalar a tamaños mas pequeños pero no lo necesita
+                    //image1.ScalePercent(50f);
+                    // image1.ScaleAbsoluteWidth(480);
+                    //image1.ScaleAbsoluteHeight(270);
+
+                    //Agrega la imagen al documento
+                    doc.Add(image1);
+                    doc.Close();
+
+                    MessageBox.Show("Exportación exitosa.");
+                }
+            }
         }
 
         private void PnlBtnCalcularClick2_MouseDown(object sender, MouseEventArgs e)
