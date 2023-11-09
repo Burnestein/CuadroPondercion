@@ -94,10 +94,10 @@ namespace CuadroPondercion
             // 
             this.panel5.Controls.Add(this.tabControl1);
             this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel5.Location = new System.Drawing.Point(665, 28);
+            this.panel5.Location = new System.Drawing.Point(665, 30);
             this.panel5.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(916, 812);
+            this.panel5.Size = new System.Drawing.Size(916, 810);
             this.panel5.TabIndex = 4;
             // 
             // tabControl1
@@ -106,10 +106,10 @@ namespace CuadroPondercion
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
-            this.tabControl1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tabControl1.Margin = new System.Windows.Forms.Padding(0, 2, 3, 2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(916, 812);
+            this.tabControl1.Size = new System.Drawing.Size(916, 810);
             this.tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -119,7 +119,7 @@ namespace CuadroPondercion
             this.tabPage1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tabPage1.Size = new System.Drawing.Size(908, 783);
+            this.tabPage1.Size = new System.Drawing.Size(908, 781);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Matriz de Relaciones";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -132,7 +132,7 @@ namespace CuadroPondercion
             this.panel2.Location = new System.Drawing.Point(3, 2);
             this.panel2.Margin = new System.Windows.Forms.Padding(0, 44, 0, 20);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(902, 779);
+            this.panel2.Size = new System.Drawing.Size(902, 777);
             this.panel2.TabIndex = 1;
             this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint);
             // 
@@ -143,7 +143,7 @@ namespace CuadroPondercion
             this.tabPage2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tabPage2.Size = new System.Drawing.Size(908, 785);
+            this.tabPage2.Size = new System.Drawing.Size(908, 781);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Diagrama de ponderacion";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -155,7 +155,7 @@ namespace CuadroPondercion
             this.panel3.Location = new System.Drawing.Point(3, 2);
             this.panel3.Margin = new System.Windows.Forms.Padding(0, 44, 20, 2);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(902, 781);
+            this.panel3.Size = new System.Drawing.Size(902, 777);
             this.panel3.TabIndex = 3;
             this.panel3.Paint += new System.Windows.Forms.PaintEventHandler(this.panel3_Paint);
             // 
@@ -169,13 +169,13 @@ namespace CuadroPondercion
             this.tableLayoutPanel1.Controls.Add(this.PnlControl, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.dataGridView1, 1, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 28);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 30);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(3, 2, 0, 2);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(665, 812);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(665, 810);
             this.tableLayoutPanel1.TabIndex = 3;
             // 
             // PnlControl
@@ -331,10 +331,10 @@ namespace CuadroPondercion
             // LblControl
             // 
             this.LblControl.AutoSize = true;
-            this.LblControl.Font = new System.Drawing.Font("Century Gothic", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LblControl.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LblControl.Location = new System.Drawing.Point(46, 4);
             this.LblControl.Name = "LblControl";
-            this.LblControl.Size = new System.Drawing.Size(203, 29);
+            this.LblControl.Size = new System.Drawing.Size(199, 29);
             this.LblControl.TabIndex = 0;
             this.LblControl.Text = "Area de control";
             // 
@@ -425,7 +425,7 @@ namespace CuadroPondercion
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(1581, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1581, 30);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 

@@ -127,6 +127,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CAreaGrafico.cs" />
     <Compile Include="CColor.cs" />
     <Compile Include="CEspacio.cs" />
     <Compile Include="CFigura.cs" />
