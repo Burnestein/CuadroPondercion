@@ -37,13 +37,13 @@ namespace CuadroPondercion
         //Selecciona la posicion del primer rombo
 
         int Si = 0;
-        int Ti = 13;
+        int Ti = 0;
         int Ui = -30;
-        int Vi = 33;
+        int Vi = 20;
         int Wi = 0;
-        int Xi = 53;
+        int Xi = 40;
         int Yi = 30;
-        int Zi = 33;
+        int Zi = 20;
 
         int rowIndex = 0;
         public Form1()
@@ -89,7 +89,7 @@ namespace CuadroPondercion
         {
             BorrarTxtBox();
             int N = 20;
-            int M = 45;
+            int M = 30;
 
             for (int j = 0; j < tam; j++)
             {
@@ -365,22 +365,6 @@ namespace CuadroPondercion
         private void button3_Click(object sender, EventArgs e) // Hace las sumatorias y saca los Rangos
         {
             
-            numeros = ConvertirTextBoxAEnteros(listaTextBoxSuma); // obtengo una lista de los numeros de sumatoria
-            Console.WriteLine("Números originales: " + string.Join(", ", numeros));
-
-            rangos = generarRangos(numeros); // obtengo una lista de rangos sincronizada con el orden de la tabla
-            Console.WriteLine("Rangos asignados: " + string.Join(", ", rangos));
-
-            Console.WriteLine("Convertimos la lista de rangos a listaTextBoxRango");
-            ConvertirEnterosATextBox(rangos);
-            Console.WriteLine("Los valores de rango han pasado a listaTextBoxRango");
-
-            
-
-            //agregar los rangos a la lista de espacios
-
-
-            panel3.Invalidate();
         }
 
         private void generarSumas()
@@ -1177,6 +1161,17 @@ namespace CuadroPondercion
             PnlBtnCalcularClick2.Visible = false;
             PnlBtnCalcularClick3.Visible = false;
         }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
         private void PnlBtnCalcularClick2_MouseDown(object sender, MouseEventArgs e)
         {
             PnlBtnCalcularClick1.Visible = false;
