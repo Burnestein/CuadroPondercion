@@ -85,9 +85,6 @@ namespace CuadroPondercion
             rowIndex = -1;
         }
 
- 
-
-
         private void GenerarTxtBox()
         {
             BorrarTxtBox();
@@ -367,14 +364,6 @@ namespace CuadroPondercion
 
         private void button3_Click(object sender, EventArgs e) // Hace las sumatorias y saca los Rangos
         {
-            //genera las sumas de las columnas y filas
-            generarSumas();
-
-
-            //comienza a generar los rangos
-            numeros.Clear();
-            rangos.Clear();
-            Console.WriteLine("ListaTextBoxes empieza en 0s");
             
             numeros = ConvertirTextBoxAEnteros(listaTextBoxSuma); // obtengo una lista de los numeros de sumatoria
             Console.WriteLine("Números originales: " + string.Join(", ", numeros));
@@ -1175,8 +1164,50 @@ namespace CuadroPondercion
             rowIndex = -1;
         }
 
-        
-        ///////////////////////////////////////////////////BOTON BORRAR STAR/////////////////////////////////////////////
+        ///////////////////////////////////////////////////BOTON Calcular STAR/////////////////////////////////////////////
+        private void PnlBtnCalcularClick1_MouseEnter(object sender, EventArgs e)
+        {
+            PnlBtnCalcularClick1.Visible = false;
+            PnlBtnCalcularClick2.Visible = true;
+            PnlBtnCalcularClick3.Visible = false;
+        }
+        private void PnlBtnCalcularClick2_MouseLeave(object sender, EventArgs e)
+        {
+            PnlBtnCalcularClick1.Visible = true;
+            PnlBtnCalcularClick2.Visible = false;
+            PnlBtnCalcularClick3.Visible = false;
+        }
+        private void PnlBtnCalcularClick2_MouseDown(object sender, MouseEventArgs e)
+        {
+            PnlBtnCalcularClick1.Visible = false;
+            PnlBtnCalcularClick2.Visible = false;
+            PnlBtnCalcularClick3.Visible = true;
+
+            //genera las sumas de las columnas y filas
+            generarSumas();
+
+
+            //comienza a generar los rangos
+            numeros.Clear();
+            rangos.Clear();
+            Console.WriteLine("ListaTextBoxes empieza en 0s");
+
+            numeros = ConvertirTextBoxAEnteros(listaTextBoxSuma);
+            Console.WriteLine("Números originales: " + string.Join(", ", numeros));
+
+            rangos = generarRangos(numeros);
+            Console.WriteLine("Rangos asignados: " + string.Join(", ", rangos));
+
+            Console.WriteLine("Convertimos la lista de rangos a listaTextBoxRango");
+            ConvertirEnterosATextBox(rangos);
+            Console.WriteLine("Los valores de rango han pasado a listaTextBoxRango");
+
+            panel3.Invalidate();
+
+        }
+        ///////////////////////////////////////////////////BOTON Calcular END/////////////////////////////////////////////
+
+        ///////////////////////////////////////////////////BOTON BORRAR END/////////////////////////////////////////////
 
         //------------------------------------------------ APARIENCIA CONTROL AREA END -----------------------------------------------------------//
 
