@@ -27,6 +27,7 @@ namespace CuadroPondercion
         List<TextBox> listaTextBoxRango;
 
         List<CEspacio> listaEspacios;
+        List<CAreaGrafico> listaAreas;
         List<string> areasEspacios;
         List<string> nombresEspacios;
         List<int> rangos;
@@ -60,6 +61,7 @@ namespace CuadroPondercion
             listaTextBoxSuma = new List<TextBox>();
             listaTextBoxRango = new List<TextBox>();
             listaEspacios = new List<CEspacio>();
+            listaAreas = new List<CAreaGrafico>();
             nombresEspacios = new List<string>();
             areasEspacios = new List<string>();
             rangos = new List<int>();
@@ -101,6 +103,7 @@ namespace CuadroPondercion
                     //Crea las filas de TextBox
                     TextBox text = new TextBox();
                     text.Location = new Point(n, m);
+                    text.TextAlign = HorizontalAlignment.Center;
                     text.MaxLength = 1;
                     text.MaximumSize = new Size(20, 18);
                     text.Text = "0";
@@ -701,8 +704,8 @@ namespace CuadroPondercion
 
         private void panel3_Paint(object sender, PaintEventArgs e)
         {
-            
-            
+
+            listaAreas.Clear();
             int totalAreas = social + semiSocial + servicio + privado;
 
             int width = 400;
@@ -712,7 +715,7 @@ namespace CuadroPondercion
 
             Graphics g = e.Graphics;
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
+            
             if (estado)
             {
                 int circleCount = Math.Min(10, rango);
@@ -738,30 +741,228 @@ namespace CuadroPondercion
                 for (int i = 0; i < circleCount; i++)
                 {
                     int radius = circleRadius * (i + 1);
-                    DrawCircleNumber(g, i + 1, centerX, centerY, radius); // Dibujar el número del círculo
+                    //DrawCircleNumber(g, i + 1, centerX, centerY, radius); // Dibujar el número del círculo
                 }
+
+                //
+                Font font = new Font("Arial", 8, FontStyle.Bold);
+                SolidBrush brush = new SolidBrush(Color.White);
                 
+                if (rangos.Count > 0)
+                {
+                    for (int rangoActual = 1; rangoActual <= circleCount; rangoActual++)
+                    {
+                        List<string> nombresEnRango = dataGridView1.Rows.Cast<DataGridViewRow>().Select(row => row.Cells["Espacio"].Value.ToString()).ToList(); // Obtener los nombres de espacios para el rango actual
+                        Console.WriteLine("Espacios:");
+                        Console.WriteLine(string.Join(", ", nombresEnRango));
+                        List<string> areasEnRango = dataGridView1.Rows.Cast<DataGridViewRow>().Select(row => row.Cells["Area"].Value.ToString()).ToList(); // Obtener los nombres de areas para el rango actual
+                        Console.WriteLine("Areas de Espacios:");
+                        Console.WriteLine(string.Join(", ", areasEnRango));
+                        for (int i=0; i < nombresEnRango.Count; i++) Console.WriteLine("Nombre y area: " + nombresEnRango[i] + " - " + areasEnRango[i]);
+
+                        if (nombresEnRango.Any())
+                        {
+                            Console.WriteLine("Entra al If(nombresEnRango.Any())");
+                            int radius = circleRadius * rangoActual; //aqui decide el radio
+                            Console.WriteLine("listaAreas.Count: "+ listaAreas.Count);
+
+                            Console.WriteLine("Entra al If(listaAreas.Any())");
+                            // Establecer el formato para el texto (alineación, etc.)
+                            StringFormat format = new StringFormat();
+                            format.LineAlignment = StringAlignment.Center;
+                            format.Alignment = StringAlignment.Center;
+                            double angle;
+                            double midAngle;
+                            double x;
+                            double y;
+                            int cantidadSocial = areasEnRango.Count(area => area == "Social");
+                            int cantidadSemi = areasEnRango.Count(area => area == "Semi-Social");
+                            int cantidadServicio = areasEnRango.Count(area => area == "Servicio");
+                            int cantidadPrivada = areasEnRango.Count(area => area == "Privada");
+                            int contSocial = 0;
+                            int contSemi = 0;
+                            int contServ = 0;
+                            int contPriv = 0;
+                            int sub = 4;
+                            for (int j = 0; j < nombresEnRango.Count; j++) // 4 es la cantidad de tipos de areas que hay
+                            {
+                                switch (areasEnRango[j])
+                                {
+                                    case "Social":
+                                        contSocial++;
+                                        Console.WriteLine("Hay un elemento en Social");
+                                        //listaAreas[0].espacios.Add(nombresEnRango[j]);
+                                        //listaAreas[0].rangos.Add(rangos[j]);
+
+                                        angle = listaAreas[0].anguloInicio;
+                                        midAngle = listaAreas[0].anguloFin / cantidadSocial;
+                                        x = centerX + radius * Math.Cos((angle + (midAngle * contSocial) - (midAngle / 2)) * Math.PI / 180); // Coordenada X del círculo del nombre del espacio
+                                        y = centerY + radius * Math.Sin((angle + (midAngle * contSocial) - (midAngle / 2)) * Math.PI / 180); // Coordenada Y del círculo del nombre del espacio
+
+                                        // Dibujar el nombre del espacio con el formato determinado
+                                        if (rangos[j] == rangoActual)
+                                        {
+                                            SolidBrush circleBrush = new SolidBrush(Color.Black); // Cambia Color.Red por el color que desees
+                                            Pen circlePen = new Pen(Color.White, 1);
+                                            int circleSize = 30;
+                                            // Dibujar un círculo detrás del texto
+                                            g.FillEllipse(circleBrush, (float)x - circleSize/2, (float)y - circleSize/2, circleSize, circleSize);
+                                            g.DrawEllipse(circlePen, (float)x - circleSize/2, (float)y - circleSize/2, circleSize, circleSize);
+                                            
+                                            if (nombresEnRango[j].Length < sub) sub = nombresEnRango[j].Length;
+                                            g.DrawString(nombresEnRango[j].Substring(0,sub), font, brush, new RectangleF((float)x - 30, (float)y - 30, 60, 60), format);
+                                            Console.WriteLine("Se dibuja " + nombresEnRango[j]);
+
+                                            circleBrush.Dispose();
+                                            circlePen.Dispose();
+                                        }
+
+                                        break;
+                                    case "Semi-Social":
+                                        contSemi++;
+                                        Console.WriteLine("Hay un elemento en Semi-social");
+                                        //listaAreas[1].espacios.Add(nombresEnRango[j]);
+                                        //listaAreas[1].rangos.Add(rangos[j]);
+
+                                        angle = listaAreas[1].anguloInicio;
+                                        midAngle = listaAreas[1].anguloFin / cantidadSemi;
+                                        x = centerX + radius * Math.Cos((angle + (midAngle * contSemi) - (midAngle / 2)) * Math.PI / 180); // Coordenada X del círculo del nombre del espacio
+                                        y = centerY + radius * Math.Sin((angle + (midAngle * contSemi) - (midAngle / 2)) * Math.PI / 180); // Coordenada Y del círculo del nombre del espacio
+
+                                        // Dibujar el nombre del espacio con el formato determinado
+                                        if (rangos[j] == rangoActual)
+                                        {
+                                            SolidBrush circleBrush = new SolidBrush(Color.Black); // Cambia Color.Red por el color que desees
+                                            Pen circlePen = new Pen(Color.White, 1);
+                                            int circleSize = 30;
+                                            // Dibujar un círculo detrás del texto
+                                            g.FillEllipse(circleBrush, (float)x - circleSize / 2, (float)y - circleSize / 2, circleSize, circleSize);
+                                            g.DrawEllipse(circlePen, (float)x - circleSize / 2, (float)y - circleSize / 2, circleSize, circleSize);
+                                            
+                                            if (nombresEnRango[j].Length < sub) sub = nombresEnRango[j].Length;
+                                            g.DrawString(nombresEnRango[j].Substring(0, sub), font, brush, new RectangleF((float)x - 30, (float)y - 30, 60, 60), format);
+                                            Console.WriteLine("Se dibuja " + nombresEnRango[j]);
+
+                                            circleBrush.Dispose();
+                                            circlePen.Dispose();
+                                        }
+
+                                        break;
+                                    case "Servicio":
+                                        contServ++;
+                                        Console.WriteLine("Hay un elemento en Servicio");
+                                        //listaAreas[2].espacios.Add(nombresEnRango[j]);
+                                        //listaAreas[2].rangos.Add(rangos[j]);
+
+                                        angle = listaAreas[2].anguloInicio;
+                                        midAngle = listaAreas[2].anguloFin / cantidadServicio;
+                                        x = centerX + radius * Math.Cos((angle + (midAngle * contServ) - (midAngle / 2)) * Math.PI / 180); // Coordenada X del círculo del nombre del espacio
+                                        y = centerY + radius * Math.Sin((angle + (midAngle * contServ) - (midAngle / 2)) * Math.PI / 180); // Coordenada Y del círculo del nombre del espacio
+
+                                        // Dibujar el nombre del espacio con el formato determinado
+                                        if (rangos[j] == rangoActual)
+                                        {
+                                            SolidBrush circleBrush = new SolidBrush(Color.Black); // Cambia Color.Red por el color que desees
+                                            Pen circlePen = new Pen(Color.White, 1);
+                                            int circleSize = 30;
+                                            // Dibujar un círculo detrás del texto
+                                            g.FillEllipse(circleBrush, (float)x - circleSize / 2, (float)y - circleSize / 2, circleSize, circleSize);
+                                            g.DrawEllipse(circlePen, (float)x - circleSize / 2, (float)y - circleSize / 2, circleSize, circleSize);
+                                            
+                                            if (nombresEnRango[j].Length < sub) sub = nombresEnRango[j].Length;
+                                            g.DrawString(nombresEnRango[j].Substring(0, sub), font, brush, new RectangleF((float)x - 30, (float)y - 30, 60, 60), format);
+                                            Console.WriteLine("Se dibuja " + nombresEnRango[j]);
+
+                                            circleBrush.Dispose();
+                                            circlePen.Dispose();
+                                        }
+
+                                        break;
+                                    case "Privada":
+                                        contPriv++;
+                                        Console.WriteLine("Hay un elemento en Privada");
+                                        //listaAreas[3].espacios.Add(nombresEnRango[j]);
+                                        //listaAreas[3].rangos.Add(rangos[j]);
+
+                                        angle = listaAreas[3].anguloInicio;
+                                        midAngle = listaAreas[3].anguloFin / cantidadPrivada;
+                                        x = centerX + radius * Math.Cos((angle + (midAngle * contPriv) - (midAngle / 2)) * Math.PI / 180); // Coordenada X del círculo del nombre del espacio
+                                        y = centerY + radius * Math.Sin((angle + (midAngle * contPriv) - (midAngle / 2)) * Math.PI / 180); // Coordenada Y del círculo del nombre del espacio
+
+                                        // Dibujar el nombre del espacio con el formato determinado
+                                        Console.WriteLine("listaAreas[0].tipoArea: " + listaAreas[0].tipoArea + " == 0 " + " && " + "rangos[rangoActual-1]: " + rangos[rangoActual - 1] + " == rangoActual: " + rangoActual);
+                                        if (rangos[j] == rangoActual)
+                                        {
+                                            SolidBrush circleBrush = new SolidBrush(Color.Black); // Cambia Color.Red por el color que desees
+                                            Pen circlePen = new Pen(Color.White, 1);
+                                            int circleSize = 30;
+                                            // Dibujar un círculo detrás del texto
+                                            g.FillEllipse(circleBrush, (float)x - circleSize / 2, (float)y - circleSize / 2, circleSize, circleSize);
+                                            g.DrawEllipse(circlePen, (float)x - circleSize / 2, (float)y - circleSize / 2, circleSize, circleSize);
+                                            
+                                            if (nombresEnRango[j].Length < sub) sub = nombresEnRango[j].Length;
+                                            g.DrawString(nombresEnRango[j].Substring(0, sub), font, brush, new RectangleF((float)x - 30, (float)y - 30, 60, 60), format);
+                                            Console.WriteLine("Se dibuja " + nombresEnRango[j]);
+
+                                            circleBrush.Dispose();
+                                            circlePen.Dispose();
+                                        }
+
+                                        break;
+                                    default:
+                                        Console.WriteLine("Error al leer dato");
+                                        break;
+                                }
+                            }
+                            
+                        }
+                    }
+                }
+
+
             }
-
-
+            //nombresEspacios.Clear();
+            //areasEspacios.Clear();
+            listaAreas.Clear();
         }
 
         private void DrawColoredCircle(Graphics g, int centerX, int centerY, int radius, int social, int semiSocial, int servicio, int privado, double angle)
         {
-            Brush[] brushes = { Brushes.Green, Brushes.Orange, Brushes.LightYellow, Brushes.Red };
+            Brush[] brushes = { Brushes.Green, Brushes.Orange, Brushes.Yellow, Brushes.Red };
             int[] areas = { social, semiSocial, servicio, privado };
-
+            listaAreas.Clear();
             double startAngle = 0;
-
+            Console.WriteLine("areas.Length: "+areas.Length);
             for (int i = 0; i < areas.Length; i++)
             {
-                if (areas[i] > 0)
-                {
+                    
+                    CAreaGrafico Miarea = new CAreaGrafico(startAngle, i);
                     double sweepAngle = angle * areas[i];
+                    Miarea.anguloFin = sweepAngle;
+                    listaAreas.Add(Miarea); //Guarda el area del circulo creada
+                    Console.WriteLine("Se agrega a listaAreas: "+ Miarea.tipoArea);
                     g.FillPie(brushes[i], centerX - radius, centerY - radius, 2 * radius, 2 * radius, (float)startAngle, (float)sweepAngle);
                     startAngle += sweepAngle;
-                }
+
             }
+        }
+
+        private void DrawCircleNumber(Graphics g, int number, int centerX, int centerY, int radius)
+        {
+            // Establecer la fuente para los números
+            Font font = new Font("Arial", 12, FontStyle.Bold);
+            SolidBrush brush = new SolidBrush(Color.Black);
+
+            // Calcular las posiciones para los números
+            int textX = centerX - 5;
+            int textY = centerY + radius + -9;
+
+            // Dibujar el número
+            g.DrawString(number.ToString(), font, brush, textX, textY);
+
+            // Liberar recursos
+            font.Dispose();
+            brush.Dispose();
         }
 
         //------------------------------------------------ APARIENCIA CONTROL AREA STAR -----------------------------------------------------------//
@@ -960,6 +1161,17 @@ namespace CuadroPondercion
             PnlBtnCalcularClick2.Visible = false;
             PnlBtnCalcularClick3.Visible = false;
         }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
         private void PnlBtnCalcularClick2_MouseDown(object sender, MouseEventArgs e)
         {
             PnlBtnCalcularClick1.Visible = false;
@@ -994,23 +1206,7 @@ namespace CuadroPondercion
 
         //------------------------------------------------ APARIENCIA CONTROL AREA END -----------------------------------------------------------//
 
-        private void DrawCircleNumber(Graphics g, int number, int centerX, int centerY, int radius)
-        {
-            // Establecer la fuente para los números
-            Font font = new Font("Arial", 12, FontStyle.Bold);
-            SolidBrush brush = new SolidBrush(Color.Black);
-
-            // Calcular las posiciones para los números
-            int textX = centerX - 5;
-            int textY = centerY + radius + -9;
-
-            // Dibujar el número
-            g.DrawString(number.ToString(), font, brush, textX, textY);
-
-            // Liberar recursos
-            font.Dispose();
-            brush.Dispose();
-        }
+        
 
         private void CrearGrafica()
         {
