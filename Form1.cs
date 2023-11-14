@@ -391,7 +391,7 @@ namespace CuadroPondercion
                     suma = 0;
 
                 }
-                else if (col > 0)
+                else if (col > 0) //
                 {
                     int t1 = 0;
                     int t2 = tam - 1;
